@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-xh#5b9797rgtwhti5d59dj+07i##tz#wdtl)f#jmv1hoy+&49-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['220.124.71.189']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -72,13 +72,13 @@ WSGI_APPLICATION = 'siteproject.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
+#본인 sql 에서 설정한 비번 입력
 DATABASES = {
     'default' : {
         'ENGINE': 'django.db.backends.mysql',    
-        'NAME': 'project',                  
+        'NAME': 'yourprojectname',                  
         'USER': 'root',                          
-        'PASSWORD': '!meteo@0511',                 
+        'PASSWORD': 'yourpassword',                 
         'HOST': 'localhost',                     
         'PORT': '3306',                          
     }
