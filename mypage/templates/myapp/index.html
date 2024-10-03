@@ -7,17 +7,22 @@
 
         <title>공동구매</title>
         <!-- 부트스트랩 css 사용 -->
-        <link rel="stylesheet" href="resources/css/bootstrap.css">
-        <!--  부트스트랩 js 사용 -->
+       <link rel="stylesheet" href="{% static 'myapp/css/bootstrap.css' %}">
+         <!-- jQuery 사용 -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script type="text/javascript" src="resources/js/bootstrap.js"></script>
-        <link rel="stylesheet" href="{% static 'myapp/css/bootstrap.css' %}">
+    
+       <!-- 부트스트랩 JS 사용 -->
+        <script src="{% static 'myapp/js/bootstrap.js' %}"></script>
+    
+        <!-- 사용자 정의 JS 파일 사용 -->
+        <script src="{% static 'myapp/js/script.js' %}"></script>
 
-        <script src="resources/js/script.js"></script>
+   
         <style>h1{color:red}</style>
         
         
     </head>
+    
     <body>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand" href="#">공동구매</a>
@@ -106,6 +111,6 @@
                     </div>
                 </div>
             </div>
-         <div>sdfgsdfg</div>
+         
     </body>
 </html>
