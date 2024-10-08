@@ -34,39 +34,61 @@
   --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
-/*메인화면 인원수 표시 정사각형*/
+/* 문서 내 모든 요소 */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* 메인화면 인원수 표시 직사각형 스타일 */
 .squares-container {
   display: flex;
   flex-wrap: wrap;
   width: 100%;
-  height: 100%;
+  height: 50%;
   margin-top: 10px;
 }
 
 .square {
-  width: 50px;  /* 사각형의 너비 */
-  height: 50px; /* 사각형의 높이 */
+  width: 120px;  /* 직사각형의 너비 */
+  height: 60px; /* 직사각형의 높이 */
   background-color: #007BFF; /* 원하는 배경색으로 변경 가능 */
   margin: 4px;  /* 사각형 간의 간격 */
-  border-radius: 9px; /* 곡률 추가 (10px 또는 더 크게 설정 가능) */
-}
-.index-item-list{
- margin: 10px;
- width: 100%;
-  height: 100%;
-}
-.Search{
-  margin:10px;
-}
-.item form{
-margin: 20px;
-}
-*,/*문서내 모든요소*/
-*::before,
-*::after {
-  box-sizing: border-box;
+  border-radius: 9px; /* 곡률 추가 */
 }
 
+.index-item-list {
+  margin: 10px;
+  width: 100%;
+  height: 100%;
+}
+
+.Search {
+  margin: 10px;
+}
+
+.item form {
+  margin: 20px;
+}
+
+.add-button {
+  width: 40px; /* 버튼의 너비 */
+  height: 40px; /* 버튼의 높이 */
+  padding: 0;
+  margin-left: 10px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 50%; /* 둥근 버튼 */
+  cursor: pointer;
+  display: flex; /* 버튼 내용 중앙 정렬을 위한 flexbox 사용 */
+  justify-content: center;
+  align-items: center;
+  font-size: 20px; /* "+" 크기 조절 */
+}
+
+.add-button:hover {
+  background-color: #0056b3;
+}
 html {
   font-family: sans-serif;
   line-height: 1.15;
