@@ -42,7 +42,7 @@
         <div class="row">
             <!-- 이미지 섹션 (모바일에서는 위에, 데스크탑에서는 오른쪽에 표시됨) -->
             <div class="col-12 d-md-none">
-                <label for="productImage">상품 이미지</label>
+                <label for="productImage"></label>
                 <img src="{{ product_image_url|default:'' }}" class="img-fluid" alt="상품 이미지" id="productImage">
             </div>
 
@@ -61,9 +61,16 @@
                         <label for="productName">상품명</label>
                         <input type="text" class="form-control" id="productName" name="productName" value="{{ product_name|default:'' }}" placeholder="상품명을 입력하세요">
                     </div>
-                    <div class="form-group">
-                        <label for="price">가격</label>
-                        <input type="text" class="form-control" id="price" name="price" value="{{ product_price|default:'' }}" placeholder="가격을 입력하세요">
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="price">가격</label>
+                            <input type="text" class="form-control" id="price" name="price" value="{{ product_price|default:'' }}" placeholder="가격을 입력하세요">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="shippingFee">배송비</label>
+                            <input type="text" class="form-control" id="shippingFee" name="shippingFee" value="{{ shipping_fee|default:'' }}" placeholder="배송비를 입력하세요" readonly>
+                        </div>
                     </div>
 
                     <!-- 인원수 및 주소 입력 -->
