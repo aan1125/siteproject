@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('mypage.urls')),  # myapp의 URL을 루트 URL에 연결
     path('mypage/', include('mypage.urls')),  # 앱의 urls.py를 포함
+    
 ]

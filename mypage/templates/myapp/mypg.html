@@ -1,0 +1,204 @@
+{% load static %} 
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>공동구매</title>
+    <link rel="stylesheet" href="{% static 'myapp/css/bootstrap.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="{% static 'myapp/js/bootstrap.js' %}"></script>
+    <script src="{% static 'myapp/js/script.js' %}"></script>
+
+    <style>
+        h1 {
+            color: red;
+        }
+        .table-responsive {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{% url 'index' %}">공동수령</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active"><a class="nav-link" href="{% url 'index' %}">홈 <span class="sr-only">(current)</span></a></li>
+                {% if request.user.is_authenticated %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'apply' %}">상품등록</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">프로필</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="{% url 'setting' %}">설정</a>
+                        <a class="dropdown-item" href="{% url 'mypg' %}">마이 페이지</a>
+                        
+                    </div>
+                </li>
+                {% endif %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">지역 카테고리</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="#">영등동</a>
+                        <a class="dropdown-item" href="#">신동</a>
+                        <a class="dropdown-item" href="#">신용동</a>
+                    </div>
+                </li>
+            </ul>
+            {% if request.user.is_authenticated %}
+            <p>{{ request.user }}님 환영합니다.</p>
+            <form class="form-inline" action="{% url 'logout' %}" method="get">
+                <button class="btn btn-outline-success" type="submit">로그아웃</button>
+            </form>
+            {% else %}
+            <form class="form-inline" action="{% url 'login' %}" method="get">
+                <button class="btn btn-outline-success" type="submit">로그인</button>
+            </form>
+            <form class="form-inline" action="{% url 'register' %}" method="get">
+                <button class="btn btn-outline-success" type="submit">회원가입</button>
+            </form>
+            {% endif %}
+        </div>
+    </nav>
+    
+    <div class="container">
+        <h2 class="mb-3">등록 상품 목록</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="thead-light">
+                    <tr>
+                        <th>항목</th>
+                        {% if registered_products %}
+                            {% for registered_product in registered_products %}
+                            <th>{{ registered_product.product.product_name }}</th>
+                            {% endfor %}
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>상품사진</td>
+                        {% if registered_products %}
+                            {% for registered_product in registered_products %}
+                            <td><img src="{{ registered_product.product.product_image_url }}" class="img-fluid" alt="상품 이미지"></td>
+                            {% endfor %}
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td>구매할 금액</td>
+                        {% if registered_products %}
+                            {% for registered_product in registered_products %}
+                            <td>{{ registered_product.purchase_amount }}</td>
+                            {% endfor %}
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td>정산받을 금액</td>
+                        {% if registered_products %}
+                            {% for registered_product in registered_products %}
+                            <td>{{ registered_product.receivable_amount }}</td>
+                            {% endfor %}
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td>수량</td>
+                        {% if registered_products %}
+                            {% for registered_product in registered_products %}
+                            <td>{{ registered_product.product.quantity }}</td>
+                            {% endfor %}
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td>운송장 번호</td>
+                        {% if registered_products %}
+                            {% for registered_product in registered_products %}
+                            <td>
+                                <form method="POST" action="">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="registered_product_id" value="{{ registered_product.id }}">
+                                    <input type="text" class="form-control" name="tracking_number" placeholder="운송장 번호" 
+                                           value="{{ registered_product.tracking_number }}" required>
+                            </td>
+                            {% endfor %}
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td>택배사</td>
+                        {% if registered_products %}
+                            {% for registered_product in registered_products %}
+                            <td>
+                                <input type="text" class="form-control" name="courier_service" placeholder="택배사" 
+                                       value="{{ registered_product.courier_service }}" required>
+                                <button type="submit" class="btn btn-success btn-sm mt-1">등록</button>
+                                </form>
+                            </td>
+                            {% endfor %}
+                        {% endif %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+               
+        <!-- 신청 상품 테이블 -->
+        <h2 class="mb-3">신청 상품 목록</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="thead-light">
+                    <tr>
+                        <th>항목</th>
+                        {% for participant in applied_products %}
+                        <th>{{ participant.product.product_name }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>사진</td>
+                        {% for participant in applied_products %}
+                        <td><img src="{{ participant.product.product_image_url }}" class="img-fluid" alt="상품 이미지"></td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>보낼 금액</td>
+                        {% for participant in applied_products %}
+                        <td>{{ participant.final_amount }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>수령 주소</td>
+                        {% for participant in applied_products %}
+                        <td>{{ participant.product.user.address }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>방장 연락처</td>
+                        {% for participant in applied_products %}
+                        <td>
+                            <a href="tel:{{ participant.product.user.phone }}">{{ participant.product.user.phone }}</a>
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>운송장 번호</td>
+                        {% for participant in applied_products %}
+                        <td>{{ participant.registered_product.tracking_number }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>택배사</td>
+                        {% for participant in applied_products %}
+                        <td>{{ participant.registered_product.courier_service }}</td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

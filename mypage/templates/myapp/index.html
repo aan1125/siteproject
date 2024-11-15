@@ -1,120 +1,220 @@
 {% load static %}
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="ko">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-        <title>공동구매</title>
-        <!-- 부트스트랩 css 사용 -->
-       <link rel="stylesheet" href="{% static 'myapp/css/bootstrap.css' %}">
-         <!-- jQuery 사용 -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    
-       <!-- 부트스트랩 JS 사용 -->
-        <script src="{% static 'myapp/js/bootstrap.js' %}"></script>
-    
-        <!-- 사용자 정의 JS 파일 사용 -->
-        <script src="{% static 'myapp/js/script.js' %}"></script>
-
-   
-        <style>h1{color:red}</style>
-        
-        
-    </head>
-    
-    <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#">공동구매</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
-          
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul class="navbar-nav mr-auto">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공동구매</title>
+    <link rel="stylesheet" href="{% static 'myapp/css/bootstrap.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="{% static 'myapp/js/bootstrap.js' %}"></script>
+    <script src="{% static 'myapp/js/script.js' %}"></script>
+    <style>h1{color:red}</style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">공동수령</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                  <a class="nav-link" href="#">홈 <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="#">홈 <span class="sr-only">(current)</span></a>
                 </li>
+                {% if request.user.is_authenticated %}
                 <li class="nav-item">
-                  <a class="nav-link" href="{% url 'apply' %}">상품등록</a>
+                    <a class="nav-link" href="{% url 'apply' %}">상품등록</a>
                 </li>
                 <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    프로필
-                  </a>
-                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="#">설정</a>
-                    <a class="dropdown-item" href="#">마이 페이지</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">찜한 상품
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        프로필
                     </a>
-                  </div>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="{% url 'setting' %}">설정</a>
+                        <a class="dropdown-item" href="{% url 'mypg' %}">마이 페이지</a>
+                    </div>
                 </li>
+                {% endif %}
                 <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    지역 카테고리
-                  </a>
-                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="#">영등동</a>
-                    <a class="dropdown-item" href="#">신동</a>
-                    
-                    <a class="dropdown-item" href="#">신용동
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        지역 카테고리
                     </a>
-                  </div>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="#">영등동</a>
+                        <a class="dropdown-item" href="#">신동</a>
+                        <a class="dropdown-item" href="#">신용동</a>
+                    </div>
                 </li>
-                
-              </ul>
-              
-              <form class="form-inline" action="{% url 'login' %}" method="get">
+            </ul>
+            {% if request.user.is_authenticated %}
+            <p>{{ request.user }}님 환영합니다.</p>
+            <form class="form-inline" action="{% url 'logout' %}" method="get">
+                <button class="btn btn-outline-success" type="submit">로그아웃</button>
+            </form>
+            {% else %}
+            <form class="form-inline" action="{% url 'login' %}" method="get">
                 <button class="btn btn-outline-success" type="submit">로그인</button>
             </form>
-            
+            <form class="form-inline" action="{% url 'register' %}" method="get">
+                <button class="btn btn-outline-success" type="submit">회원가입</button>
             </form>
-            <form class="form-inline">
-                <button class="btn btn-outline-success" type="button" onclick="redirectToPage()">회원가입</button>
-              </form>
-              
-              <script>
-                function redirectToPage() {
-                  // 이동할 페이지의 URL을 입력하세요
-                  window.location.href = "{% url 'register' %}";  // 'register'는 urls.py에 정의한 이름
-                }
-              </script>
-            </div>
-        </nav>
-            <!--p 태그 paragraph 단락
-            br 태그 줄바꿈
-            a 태그 링크
-            h1~h3 제목 크기
-            ./ -> 현재 폴더
-            .. / -> 상위 폴더
-            .. /../ -> 상위 폴더의 상위 폴더
-            -->
-            
-            <div class="Search">
-              <form class="form-inline my-2 my-lg-0"></form>
-                <input class="form-control mr-sm-2" type="상품명을 입력" placeholder="상품명을 입력" aria-label="상품명을 입력">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-              </form>
-            </div>
+            {% endif %}
+        </div>
+    </nav>
+    
+    <div class="Search">
+        <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="text" placeholder="상품명을 입력" aria-label="상품명을 입력">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+    </div>
 
-            <div class="index-item-list">
-              <div class="card" style="width: 18rem;">
-                <img src="..." class="card-img-top" alt="상품 이미지">
-                <div class="card-body">
-                  <p class="card-text1">치약</p>
-                  <p class="card-text2">23000원</p>
-                  <div class="squares-container">
-                    <div class="square"></div>
-                    <div class="square"></div>
-                    <div class="square"></div>
-                    <div class="square"></div> <!-- 참여자 수를 표시하는 직사각형 -->
-                    <button class="add-button" onclick="location.href='{% url 'apply' %}'">+</button>
-                  </div>
+    <div class="container my-4">
+        <div class="form-group">
+            <button id="showNearby" class="btn btn-primary" onclick="showNearbyProducts()">500M 이내 상품</button>
+            <button id="showAll" class="btn btn-secondary" onclick="showAllProducts()">전체 상품</button>
+        </div>
+    </div>
+    
+    <div class="index-item-list container">
+        <div class="row" id="productList">
+            {% for product in registered_products %}
+                <div class="col-md-3 mb-4 product-item" data-lat="{{ product.latitude }}" data-lng="{{ product.longitude }}">
+                    <div class="card" style="width: 100%;">
+                        <img src="{{ product.product.product_image_url }}" class="card-img-top" alt="상품 이미지">
+                        <div class="card-body">
+                            <p class="card-text1">{{ product.product.product_name }}</p>
+                            <p>주소: {{ product.registrant_id.address }}</p>
+                            <p>
+                                <a href="https://maps.google.com/maps?&z=18.5&q={{ product.registrant_id.location }}&ll={{ product.registrant_id.location }}" target="_blank" class="btn btn-primary">
+                                    위치 보기
+                                </a>
+                            </p>
+                            {% with updated_people_count=product.product.people_count|add_one %}
+                            <p class="card-text2">
+                                보낼금액: {{ product.purchase_amount|div:updated_people_count|floatformat:"0" }}원
+                            </p>
+                            <p class="card-text2">
+                                받을수량: {{ product.product.quantity|div:updated_people_count|floatformat:"0" }}개
+                            </p>
+                            {% endwith %}
+                            <div id="status-{{ product.product.id }}" style="display: flex; align-items: center;">
+                                <p style="margin: 0;">현재 참여자 수: {{ product.product.people_now_count }} / {{ product.product.people_count }}</p>
+                                <button class="add-button" onclick="confirmParticipation('{{ product.product.id }}', {{ product.product.people_count }})" style="margin-left: 10px;">+</button>
+                            </div>
+                            {% if product.product.people_now_count >= product.product.people_count %}
+                                <p class="status-message" style="color: red;">마감되었습니다</p>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </div>
-         
-    </body>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <script>
+      function confirmParticipation(productId, maxCount) {
+        if (confirm("참가하시겠습니까?")) {
+            incrementCount(productId, maxCount);
+            alert("신청이 완료되었습니다.");
+        }
+    }
+
+    function incrementCount(productId, maxCount) {
+        fetch(`/increment_count/${productId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ 'increment': 1 })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateUI(productId, data.people_now_count, maxCount);
+            } else {
+                alert(data.error || '참여자 수를 증가시킬 수 없습니다.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function updateUI(productId, peopleNowCount, maxCount) {
+        const statusText = document.getElementById(`status-${productId}`);
+
+        // 요소가 존재하는지 확인
+        if (statusText) {
+            // 현재 참여자 수 업데이트
+            statusText.textContent = `현재 참여자 수: ${peopleNowCount} / ${maxCount}`;
+
+            // 최대 인원에 도달한 경우 메시지 표시
+            if (peopleNowCount >= maxCount) {
+                statusText.textContent = "마감되었습니다";
+            }
+        } else {
+            console.error(`Element with ID 'status-${productId}' not found.`);
+        }
+    }
+
+// 상품 보기 모드 토글
+function showNearbyProducts() {
+    const allProductItems = document.querySelectorAll('.product-item');
+    const userLocation = '{{ request.user.location|default:"" }}'; // 사용자 위치
+
+    allProductItems.forEach(item => {
+        const lat = parseFloat(item.getAttribute('data-lat'));
+        const lng = parseFloat(item.getAttribute('data-lng'));
+        const distance = calculateDistance(userLocation, lat, lng);
+
+        if (distance <= 500) { // 500m 이내인 경우
+            item.style.display = 'block'; // 보이게
+        } else {
+            item.style.display = 'none'; // 숨김
+        }
+    });
+}
+
+function showAllProducts() {
+    const allProductItems = document.querySelectorAll('.product-item');
+    allProductItems.forEach(item => {
+        item.style.display = 'block'; // 전체 상품 모드에서는 모두 보이게
+    });
+}
+
+function calculateDistance(userLocation, lat, lng) {
+    if (!userLocation) return Infinity; // 위치 정보가 없는 경우 무한대 반환
+    const [userLat, userLng] = userLocation.split(',').map(Number);
+    const R = 6371; // 지구 반지름 (km)
+    const dLat = (lat - userLat) * (Math.PI / 180);
+    const dLng = (lng - userLng) * (Math.PI / 180);
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(userLat * (Math.PI / 180)) * Math.cos(lat * (Math.PI / 180)) *
+        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c * 1000; // 거리 반환 (m 단위로 변환)
+}
+
+    // CSRF 토큰 가져오기 함수
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    </script>
+</body>
 </html>
+

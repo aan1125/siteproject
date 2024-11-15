@@ -92,17 +92,25 @@
   width: 100%; /* 카드 너비에 맞추기 */
 }
 
+
 .square {
   flex: 1; 
-  max-width: calc(100% / 4 - 20px); /* 네 개의 사각형이 카드 너비에 맞도록 간격 조정 */
+  max-width: calc(100% / 3 - 20px); /* 3 개의 사각형이 카드 너비에 맞도록 간격 조정 */
   height: 60px; 
-  background-color: #007BFF;
+  background-color: transparent;
+  border: 2px solid #181010; /* 테두리 색상과 두께 설정 */
   border-radius: 9px;
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: background-color 0.3s; /* 배경색 변경 시 부드러운 전환 효과 */
 }
 
+/* 채워진 상태의 스타일 */
+.square.filled {
+  background-color: #4caf50; /* 채워진 색상 */
+  border: 2px solid #388e3c; /* 채워진 상태의 테두리 색상 */
+}
 /* 추가 버튼 스타일 */
 .add-button {
   width: 40px;
@@ -117,6 +125,8 @@
   align-items: center;
   font-size: 20px;
   transition: background-color 0.2s;
+  margin-left: 10px; /* 버튼과 참여자 수 사이의 간격 */
+  vertical-align: middle; /* 버튼을 텍스트와 수직 정렬 */
 }
 
 .add-button:hover {

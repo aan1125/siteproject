@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,22 +8,21 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        crossorigin="anonymous">
 
     <style>
         /* 전체 배경 스타일 */
         body {
             min-height: 100vh;
             background: linear-gradient(to right, #6a11cb, #2575fc);
-            display: flex; /* Flexbox 사용 */
-            justify-content: center; /* 수평 중앙 정렬 */
-            align-items: center; /* 수직 중앙 정렬 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-
         /* 로그인 폼 스타일 */
         .login-form {
             max-width: 400px;
-            width: 100%; /* 반응형을 위해 100% 너비 설정 */
+            width: 100%;
             padding: 30px;
             background: white;
             border-radius: 10px;
@@ -36,15 +34,26 @@
 <body>
     <div class="login-form">
         <h4 class="mb-3 text-center">로그인</h4>
-        <form novalidate>
+
+        <!-- Django 메시지 표시 -->
+        {% if messages %}
+          <div class="alert alert-danger">
+            {% for message in messages %}
+              <p>{{ message }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <form method="post" class="validation-form" novalidate>
+            {% csrf_token %}
             <div class="form-group">
                 <label for="username">사용자 이름</label>
-                <input type="text" class="form-control" id="username" placeholder="사용자 이름" required>
+                <input type="text" class="form-control" id="username" name="username" placeholder="사용자 이름" required autocomplete="username">
                 <div class="invalid-feedback">사용자 이름을 입력해주세요.</div>
             </div>
             <div class="form-group">
                 <label for="password">비밀번호</label>
-                <input type="password" class="form-control" id="password" placeholder="비밀번호" required>
+                <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호" required autocomplete="current-password">
                 <div class="invalid-feedback">비밀번호를 입력해주세요.</div>
             </div>
             <button type="submit" class="btn btn-primary btn-block">로그인</button>
@@ -64,12 +73,16 @@
         (function () {
             'use strict';
             window.addEventListener('load', function () {
-                var forms = document.getElementsByClassName('needs-validation');
+                var forms = document.getElementsByClassName('validation-form');
                 Array.prototype.filter.call(forms, function (form) {
                     form.addEventListener('submit', function (event) {
-                        if (form.checkValidity() === false) {
+                        var username = form.querySelector('#username').value;
+                        var password = form.querySelector('#password').value;
+
+                        if (!username || !password) {
                             event.preventDefault();
                             event.stopPropagation();
+                            alert("사용자 이름과 비밀번호를 입력하세요.");
                         }
                         form.classList.add('was-validated');
                     }, false);
@@ -78,5 +91,4 @@
         })();
     </script>
 </body>
-
 </html>
