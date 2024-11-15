@@ -13,5 +13,4 @@ urlpatterns = [
     path('increment_count/<int:product_id>/', views.increment_count, name='increment_count'),
     path('scrape_product_info/', views.scrape_product_info, name='scrape_product_info'),
     path('setting/', views.setting, name='setting'), 
-  
 ]

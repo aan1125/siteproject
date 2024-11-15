@@ -32,6 +32,20 @@ from geopy.distance import geodesic
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Product, Participant  # Participant 모델이 있다고 가정
+
+'''def search(request):
+    query = request.GET.get('q')  # 쿼리 문자열에서 'q' 파라미터 가져오기
+    if query:
+        results = Product.objects.filter(product_name__icontains=query)  # 상품명으로 필터링
+    else:
+        results = Product.objects.none()  # 쿼리가 없으면 빈 쿼리셋 반환
+
+    context = {
+        'results': results,
+        'query': query,
+        'registered_products': Product.objects.all(),  # 전체 상품 목록도 포함
+    }
+    return render(request, 'myapp/index.html', context)  # 기존 index.html 템플릿 사용'''
 @login_required
 def setting(request):
     user = request.user
@@ -86,8 +100,51 @@ def increment_count(request, product_id):
             return JsonResponse({'success': False, 'error': '제품을 찾을 수 없습니다.'})
     return JsonResponse({'success': False, 'error': '잘못된 요청입니다.'})
 
+def index(request):
+    query = request.GET.get('q')  # 쿼리 문자열에서 'q' 파라미터 가져오기
+    registered_products = RegisteredProduct.objects.select_related('product', 'registrant_id')
 
-#메인페이지 상품 진열
+    # 사용자 위치 가져오기
+    user_location = None
+    if request.user.is_authenticated:
+        user_location = request.user.location  # "위도,경도" 형식
+
+    # 500m 이내 상품 필터링
+    nearby_products = []
+    if user_location:
+        user_latitude, user_longitude = map(float, user_location.split(','))
+
+        for registered_product in registered_products:
+            registrant_location = registered_product.registrant_id.location
+            if registrant_location:
+                registrant_latitude, registrant_longitude = map(float, registrant_location.split(','))
+                distance = geodesic((user_latitude, user_longitude), (registrant_latitude, registrant_longitude)).meters  # 거리 계산 (m 단위)
+
+                if distance <= 500:  # 500m 이내인 경우
+                    nearby_products.append(registered_product)
+
+    # 검색 기능
+    if query:
+        results = Product.objects.filter(product_name__icontains=query)  # 상품명으로 필터링
+    else:
+        results = Product.objects.none()  # 쿼리가 없으면 빈 쿼리셋 반환
+
+    # 위치 정보를 미리 분리하여 전달
+    for product in registered_products:
+        if product.registrant_id.location:
+            lat, lng = product.registrant_id.location.split(',')
+            product.latitude = lat
+            product.longitude = lng
+
+    context = {
+        'registered_products': registered_products,  # 전체 상품
+        'nearby_products': nearby_products,  # 근처 상품
+        'results': results,  # 검색 결과
+        'query': query,  # 검색어
+        'user': request.user,
+    }
+    return render(request, 'myapp/index.html', context)  # 기존 index.html 템플릿 사용
+'''#메인페이지 상품 진열
 def index(request):
     registered_products = RegisteredProduct.objects.select_related('product', 'registrant_id')
 
@@ -132,28 +189,8 @@ def index(request):
         'nearby_products': nearby_products,  # 근처 상품
         'user': request.user,
     }
-    return render(request, 'myapp/index.html', context)
-'''def index(request):
-    registered_products = RegisteredProduct.objects.select_related('product', 'registrant_id')
+    return render(request, 'myapp/index.html', context)'''
 
-    if request.method == 'POST':
-        product_id = request.POST.get('product_id')
-        address = request.POST.get('address')  # 주소 입력 받기
-        product = get_object_or_404(Product, id=product_id)
-
-        registered_product = RegisteredProduct(
-            product=product,
-            registrant_id=request.user,
-            address=address,
-        )
-        
-
-
-    context = {
-        'registered_products': registered_products,
-        'user': request.user,
-    }
-    return render(request, 'myapp/index.html',context)'''
 
 def login(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':

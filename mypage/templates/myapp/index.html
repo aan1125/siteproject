@@ -66,8 +66,8 @@
     </nav>
     
     <div class="Search">
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="text" placeholder="상품명을 입력" aria-label="상품명을 입력">
+        <form class="form-inline my-2 my-lg-0" action="{% url 'index' %}" method="get">
+            <input class="form-control mr-sm-2" type="text" name="q" placeholder="상품명을 입력" aria-label="상품명을 입력">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
     </div>
@@ -78,143 +78,176 @@
             <button id="showAll" class="btn btn-secondary" onclick="showAllProducts()">전체 상품</button>
         </div>
     </div>
-    
     <div class="index-item-list container">
         <div class="row" id="productList">
-            {% for product in registered_products %}
-                <div class="col-md-3 mb-4 product-item" data-lat="{{ product.latitude }}" data-lng="{{ product.longitude }}">
-                    <div class="card" style="width: 100%;">
-                        <img src="{{ product.product.product_image_url }}" class="card-img-top" alt="상품 이미지">
-                        <div class="card-body">
-                            <p class="card-text1">{{ product.product.product_name }}</p>
-                            <p>주소: {{ product.registrant_id.address }}</p>
-                            <p>
-                                <a href="https://maps.google.com/maps?&z=18.5&q={{ product.registrant_id.location }}&ll={{ product.registrant_id.location }}" target="_blank" class="btn btn-primary">
-                                    위치 보기
-                                </a>
-                            </p>
-                            {% with updated_people_count=product.product.people_count|add_one %}
-                            <p class="card-text2">
-                                보낼금액: {{ product.purchase_amount|div:updated_people_count|floatformat:"0" }}원
-                            </p>
-                            <p class="card-text2">
-                                받을수량: {{ product.product.quantity|div:updated_people_count|floatformat:"0" }}개
-                            </p>
-                            {% endwith %}
-                            <div id="status-{{ product.product.id }}" style="display: flex; align-items: center;">
-                                <p style="margin: 0;">현재 참여자 수: {{ product.product.people_now_count }} / {{ product.product.people_count }}</p>
-                                <button class="add-button" onclick="confirmParticipation('{{ product.product.id }}', {{ product.product.people_count }})" style="margin-left: 10px;">+</button>
+            {% if query %}
+            
+                <h2 class="search-title">검색 결과: "{{ query }}"</h2>
+                {% if results %}
+                    {% for product in results %}
+                        <div class="col-md-3 mb-4 product-item" data-lat="{{ product.location|default:"" }}" data-lng="{{ product.location|default:"" }}">
+                            <div class="card" style="width: 100%;">
+                                <img src="{{ product.product_image_url }}" class="card-img-top" alt="상품 이미지">
+                                <div class="card-body">
+                                    <p class="card-text1">{{ product.product_name }}</p>
+                                    <p>주소: {{ product.user.address }}</p>
+                                   
+                                    <p class="card-text2">
+                                        상세정보는 신청후 마이페이지에서 확인 가능합니다.
+                                    </p>
+                                    
+                                    
+                                    <div id="status-{{ product.id }}" style="display: flex; align-items: center;">
+                                        <p style="margin: 0;">현재 참여자 수: {{ product.people_now_count }} / {{ product.people_count }}</p>
+                                        <button class="add-button" onclick="confirmParticipation('{{ product.id }}', {{ product.people_count }})" style="margin-left: 10px;">+</button>
+                                    </div>
+                                    {% if product.people_now_count >= product.people_count %}
+                                        <p class="status-message" style="color: red;">마감되었습니다</p>
+                                    {% endif %}
+                                </div>
                             </div>
-                            {% if product.product.people_now_count >= product.product.people_count %}
-                                <p class="status-message" style="color: red;">마감되었습니다</p>
-                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>검색 결과가 없습니다.</p>
+                {% endif %}
+            {% else %}
+                
+                {% for product in registered_products %}
+                    <div class="col-md-3 mb-4 product-item" data-lat="{{ product.latitude }}" data-lng="{{ product.longitude }}">
+                        <div class="card" style="width: 100%;">
+                            <img src="{{ product.product.product_image_url }}" class="card-img-top" alt="상품 이미지">
+                            <div class="card-body">
+                                <p class="card-text1">{{ product.product.product_name }}</p>
+                                <p>주소: {{ product.registrant_id.address }}</p>
+                                <p>
+                                    <a href="https://maps.google.com/maps?&z=18.5&q={{ product.registrant_id.location }}&ll={{ product.registrant_id.location }}" target="_blank" class="btn btn-primary">
+                                        위치 보기
+                                    </a>
+                                </p>
+                                {% with updated_people_count=product.product.people_count|add_one %}
+                                <p class="card-text2">
+                                    보낼금액: {{ product.purchase_amount|div:updated_people_count|floatformat:"0" }}원
+                                </p>
+                                <p class="card-text2">
+                                    받을수량: {{ product.product.quantity|div:updated_people_count|floatformat:"0" }}개
+                                </p>
+                                {% endwith %}
+                                <div id="status-{{ product.product.id }}" style="display: flex; align-items: center;">
+                                    <p style="margin: 0;">현재 참여자 수: {{ product.product.people_now_count }} / {{ product.product.people_count }}</p>
+                                    <button class="add-button" onclick="confirmParticipation('{{ product.product.id }}', {{ product.product.people_count }})" style="margin-left: 10px;">+</button>
+                                </div>
+                                {% if product.product.people_now_count >= product.product.people_count %}
+                                    <p class="status-message" style="color: red;">마감되었습니다</p>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            {% endif %}
         </div>
     </div>
-    
     <script>
-      function confirmParticipation(productId, maxCount) {
-        if (confirm("참가하시겠습니까?")) {
-            incrementCount(productId, maxCount);
-            alert("신청이 완료되었습니다.");
+        function confirmParticipation(productId, maxCount) {
+            if (confirm("참가하시겠습니까?")) {
+                incrementCount(productId, maxCount);
+                alert("신청이 완료되었습니다.");
+            }
         }
-    }
-
-    function incrementCount(productId, maxCount) {
-        fetch(`/increment_count/${productId}/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: JSON.stringify({ 'increment': 1 })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                updateUI(productId, data.people_now_count, maxCount);
+    
+        function incrementCount(productId, maxCount) {
+            fetch(`/increment_count/${productId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ 'increment': 1 })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateUI(productId, data.people_now_count, maxCount);
+                    // 페이지 새로고침
+                    location.reload(); // 참가 후 페이지 새로고침
+                } else {
+                    alert(data.error || '참여자 수를 증가시킬 수 없습니다.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    
+        function updateUI(productId, peopleNowCount, maxCount) {
+            const statusText = document.getElementById(`status-${productId}`);
+    
+            // 요소가 존재하는지 확인
+            if (statusText) {
+                // 현재 참여자 수 업데이트
+                statusText.textContent = `현재 참여자 수: ${peopleNowCount} / ${maxCount}`;
+    
+                // 최대 인원에 도달한 경우 메시지 표시
+                if (peopleNowCount >= maxCount) {
+                    statusText.textContent = "마감되었습니다";
+                }
             } else {
-                alert(data.error || '참여자 수를 증가시킬 수 없습니다.');
+                console.error(`Element with ID 'status-${productId}' not found.`);
             }
-        })
-        .catch(error => console.error('Error:', error));
-    }
-
-    function updateUI(productId, peopleNowCount, maxCount) {
-        const statusText = document.getElementById(`status-${productId}`);
-
-        // 요소가 존재하는지 확인
-        if (statusText) {
-            // 현재 참여자 수 업데이트
-            statusText.textContent = `현재 참여자 수: ${peopleNowCount} / ${maxCount}`;
-
-            // 최대 인원에 도달한 경우 메시지 표시
-            if (peopleNowCount >= maxCount) {
-                statusText.textContent = "마감되었습니다";
-            }
-        } else {
-            console.error(`Element with ID 'status-${productId}' not found.`);
         }
-    }
-
-// 상품 보기 모드 토글
-function showNearbyProducts() {
-    const allProductItems = document.querySelectorAll('.product-item');
-    const userLocation = '{{ request.user.location|default:"" }}'; // 사용자 위치
-
-    allProductItems.forEach(item => {
-        const lat = parseFloat(item.getAttribute('data-lat'));
-        const lng = parseFloat(item.getAttribute('data-lng'));
-        const distance = calculateDistance(userLocation, lat, lng);
-
-        if (distance <= 500) { // 500m 이내인 경우
-            item.style.display = 'block'; // 보이게
-        } else {
-            item.style.display = 'none'; // 숨김
+    
+        function showNearbyProducts() {
+            const allProductItems = document.querySelectorAll('.product-item');
+            const userLocation = '{{ request.user.location|default:"" }}'; // 사용자 위치
+    
+            allProductItems.forEach(item => {
+                const lat = parseFloat(item.getAttribute('data-lat'));
+                const lng = parseFloat(item.getAttribute('data-lng'));
+                const distance = calculateDistance(userLocation, lat, lng);
+    
+                if (distance <= 500) { // 500m 이내인 경우
+                    item.style.display = 'block'; // 보이게
+                } else {
+                    item.style.display = 'none'; // 숨김
+                }
+            });
         }
-    });
-}
-
-function showAllProducts() {
-    const allProductItems = document.querySelectorAll('.product-item');
-    allProductItems.forEach(item => {
-        item.style.display = 'block'; // 전체 상품 모드에서는 모두 보이게
-    });
-}
-
-function calculateDistance(userLocation, lat, lng) {
-    if (!userLocation) return Infinity; // 위치 정보가 없는 경우 무한대 반환
-    const [userLat, userLng] = userLocation.split(',').map(Number);
-    const R = 6371; // 지구 반지름 (km)
-    const dLat = (lat - userLat) * (Math.PI / 180);
-    const dLng = (lng - userLng) * (Math.PI / 180);
-    const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(userLat * (Math.PI / 180)) * Math.cos(lat * (Math.PI / 180)) *
-        Math.sin(dLng / 2) * Math.sin(dLng / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c * 1000; // 거리 반환 (m 단위로 변환)
-}
-
-    // CSRF 토큰 가져오기 함수
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
+    
+        function showAllProducts() {
+            const allProductItems = document.querySelectorAll('.product-item');
+            allProductItems.forEach(item => {
+                item.style.display = 'block'; // 전체 상품 모드에서는 모두 보이게
+            });
+        }
+    
+        function calculateDistance(userLocation, lat, lng) {
+            if (!userLocation) return Infinity; // 위치 정보가 없는 경우 무한대 반환
+            const [userLat, userLng] = userLocation.split(',').map(Number);
+            const R = 6371; // 지구 반지름 (km)
+            const dLat = (lat - userLat) * (Math.PI / 180);
+            const dLng = (lng - userLng) * (Math.PI / 180);
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(userLat * (Math.PI / 180)) * Math.cos(lat * (Math.PI / 180)) *
+                Math.sin(dLng / 2) * Math.sin(dLng / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c * 1000; // 거리 반환 (m 단위로 변환)
+        }
+    
+        // CSRF 토큰 가져오기 함수
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
                 }
             }
+            return cookieValue;
         }
-        return cookieValue;
-    }
     </script>
+    
 </body>
 </html>
-
